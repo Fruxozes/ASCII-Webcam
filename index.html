@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Webcam ASCII Art — Matrix Edition</title>
+<title>Webcam ASCII Art — Matrix Edition (Optimized)</title>
 <style>
 :root {
   --ascii-color: #0f0;
@@ -18,8 +18,8 @@ html, body { height: 100%; overflow: hidden; -webkit-tap-highlight-color: transp
 body {
   background: var(--bg-color);
   font-family: -apple-system, BlinkMacSystemFont, 'Courier New', monospace;
-  display: flex; 
-  align-items: center; 
+  display: flex;
+  align-items: center;
   justify-content: center;
   position: relative;
   touch-action: manipulation;
@@ -33,6 +33,7 @@ body {
   height: 100%;
   z-index: -1;
   overflow: hidden;
+  pointer-events: none;
 }
 
 .particle {
@@ -50,17 +51,6 @@ body {
   }
 }
 
-.matrix-rain {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: -1;
-  opacity: 0.1;
-  pointer-events: none;
-}
-
 #container {
   position: relative;
   border: 2px solid color-mix(in srgb, var(--ascii-color) 30%, transparent);
@@ -71,7 +61,7 @@ body {
               inset 0 0 20px color-mix(in srgb, var(--ascii-color) 10%, transparent);
   backdrop-filter: blur(5px);
   overflow: hidden;
-  max-width: 95vw; 
+  max-width: 95vw;
   max-height: 70vh;
   z-index: 10;
   margin-top: 50px;
@@ -88,22 +78,22 @@ body {
 }
 
 .controls-panel {
-  position: fixed; 
+  position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
   background: var(--ui-bg);
-  padding: 12px 10px; 
+  padding: 12px 10px;
   border-radius: 15px 15px 0 0;
   border-top: 1px solid var(--ascii-color);
   border-left: 1px solid var(--ascii-color);
   border-right: 1px solid var(--ascii-color);
-  backdrop-filter: blur(15px); 
+  backdrop-filter: blur(15px);
   z-index: 1000;
-  display: flex; 
-  flex-direction: column; 
+  display: flex;
+  flex-direction: column;
   gap: 12px;
-  align-items: center; 
+  align-items: center;
   max-height: 40vh;
   overflow-y: auto;
   box-shadow: 0 0 40px color-mix(in srgb, var(--ascii-color) 40%, transparent);
@@ -115,65 +105,65 @@ body {
   transform: translateY(100%);
 }
 
-.control-group { 
-  display: flex; 
-  flex-direction: column; 
-  align-items: center; 
-  width: 100%; 
+.control-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
 }
 
 .control-group label {
-  color: var(--ascii-color); 
-  font-size: 14px; 
+  color: var(--ascii-color);
+  font-size: 14px;
   margin-bottom: 8px;
-  text-shadow: 0 0 3px var(--ascii-glow); 
+  text-shadow: 0 0 3px var(--ascii-glow);
   font-weight: bold;
 }
 
-.slider-container { 
-  display: flex; 
-  flex-direction: column; 
-  align-items: center; 
-  gap: 5px; 
-  margin-bottom: 8px; 
+.slider-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 8px;
   width: 100%;
 }
 
 input[type="range"] {
-  width: 90%; 
+  width: 90%;
   height: 8px;
   background: linear-gradient(to right, #001800, var(--ascii-color));
-  border-radius: 5px; 
-  outline: none; 
+  border-radius: 5px;
+  outline: none;
   -webkit-appearance: none;
 }
 
 input[type="range"]::-webkit-slider-thumb {
-  -webkit-appearance: none; 
-  width: 24px; 
-  height: 24px; 
+  -webkit-appearance: none;
+  width: 24px;
+  height: 24px;
   background: var(--ascii-color);
-  border-radius: 50%; 
-  cursor: pointer; 
-  box-shadow: 0 0 8px var(--ascii-color); 
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 0 8px var(--ascii-color);
   border: 2px solid #000;
 }
 
 .value-display {
-  color: var(--ascii-color); 
-  font-size: 12px; 
+  color: var(--ascii-color);
+  font-size: 12px;
   background: rgba(0, 30, 0, 0.7);
-  padding: 4px 8px; 
+  padding: 4px 8px;
   border-radius: 6px;
   border: 1px solid color-mix(in srgb, var(--ascii-color) 30%, transparent);
-  min-width: 50px; 
+  min-width: 50px;
   text-align: center;
 }
 
-.button-grid { 
-  display: grid; 
-  grid-template-columns: repeat(3, 1fr); 
-  gap: 10px; 
+.button-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
   width: 100%;
 }
 
@@ -181,11 +171,11 @@ input[type="range"]::-webkit-slider-thumb {
   background: linear-gradient(45deg, #002200, #003300);
   color: var(--ascii-color);
   border: 1px solid var(--ascii-color);
-  padding: 10px 5px; 
+  padding: 10px 5px;
   cursor: pointer;
-  font: bold 14px -apple-system, BlinkMacSystemFont, sans-serif; 
+  font: bold 14px -apple-system, BlinkMacSystemFont, sans-serif;
   border-radius: 8px;
-  transition: all 0.15s ease; 
+  transition: all 0.15s ease;
   text-shadow: 0 0 2px var(--ascii-glow);
   min-height: 44px;
 }
@@ -197,30 +187,35 @@ input[type="range"]::-webkit-slider-thumb {
   transform: translateY(-2px);
 }
 
-.btn.active { 
-  background: var(--ascii-color); 
-  color: #000; 
-  box-shadow: 0 0 20px var(--ascii-color); 
+.btn.active {
+  background: var(--ascii-color);
+  color: #000;
+  box-shadow: 0 0 20px var(--ascii-color);
 }
 
-.top-bar { 
-  position: fixed; 
-  top: 15px; 
+.top-bar {
+  position: fixed;
+  top: 15px;
   left: 0;
   right: 0;
-  z-index: 1001; 
+  z-index: 1001;
   display: flex;
   justify-content: space-between;
   padding: 0 15px;
+  pointer-events: none;
+}
+
+.top-bar > * {
+  pointer-events: auto;
 }
 
 .stats {
-  color: var(--ascii-color); 
-  font-size: 12px; 
+  color: var(--ascii-color);
+  font-size: 12px;
   text-shadow: 0 0 2px var(--ascii-glow);
   background: var(--ui-bg);
-  padding: 8px 12px; 
-  border-radius: 8px; 
+  padding: 8px 12px;
+  border-radius: 8px;
   border: 1px solid var(--ascii-color);
 }
 
@@ -294,27 +289,22 @@ input[type="range"]::-webkit-slider-thumb {
     margin-top: 60px;
     padding: 8px;
   }
-  
   #asciiArt {
     font-size: 5px;
   }
-  
   .controls-panel {
     padding: 10px 8px;
     gap: 10px;
   }
-  
   .button-grid {
     grid-template-columns: repeat(3, 1fr);
     gap: 8px;
   }
-  
   .btn {
     padding: 8px 4px;
     font-size: 12px;
     min-height: 40px;
   }
-  
   .control-group label {
     font-size: 12px;
   }
@@ -325,7 +315,6 @@ input[type="range"]::-webkit-slider-thumb {
     max-height: 80vh;
     margin-top: 10px;
   }
-  
   .controls-panel {
     max-height: 90vh;
   }
@@ -337,7 +326,6 @@ input[type="range"]::-webkit-slider-thumb {
     padding-right: max(15px, env(safe-area-inset-right));
     padding-top: env(safe-area-inset-top);
   }
-  
   .controls-panel {
     padding-bottom: max(12px, env(safe-area-inset-bottom));
   }
@@ -345,11 +333,8 @@ input[type="range"]::-webkit-slider-thumb {
 </style>
 </head>
 <body>
-  <!-- Анимированный фон -->
   <div class="particles" id="particles"></div>
-  <div class="matrix-rain" id="matrixRain"></div>
 
-  <!-- Экран загрузки -->
   <div class="loading" id="loading">
     <div class="loading-spinner"></div>
     <div class="loading-text">ЗАГРУЗКА MATRIX...<br>Разрешите доступ к камере</div>
@@ -365,7 +350,7 @@ input[type="range"]::-webkit-slider-thumb {
     <pre id="asciiArt"></pre>
   </div>
 
-  <div class="controls-panel" id="controlsPanel">
+  <div class="controls-panel hidden" id="controlsPanel">
     <div class="control-group">
       <label>Настройки</label>
       <div class="slider-container">
@@ -381,7 +366,6 @@ input[type="range"]::-webkit-slider-thumb {
         <div class="value-display" id="brightnessValue">1.0</div>
       </div>
     </div>
-
     <div class="control-group">
       <label>🎨 Цвет</label>
       <div class="button-grid" id="color-buttons">
@@ -393,7 +377,6 @@ input[type="range"]::-webkit-slider-thumb {
         <button class="btn" data-color="#f00">Красный</button>
       </div>
     </div>
-
     <div class="control-group">
       <label>🔍 Разрешение</label>
       <div class="button-grid" id="resolution-buttons">
@@ -402,7 +385,6 @@ input[type="range"]::-webkit-slider-thumb {
         <button class="btn" data-res="high">Выс.</button>
       </div>
     </div>
-
     <div class="control-group">
       <label>⚙️ Эффекты</label>
       <div class="button-grid">
@@ -417,131 +399,136 @@ input[type="range"]::-webkit-slider-thumb {
   </div>
 
 <script>
-// --- CONFIG ---
+// --- КОНФИГУРАЦИЯ ---
 const RESOLUTIONS = {
   low: { width: 120, height: 68 },
   medium: { width: 160, height: 90 },
   high: { width: 200, height: 113 }
 };
+const CHAR_SET = '$#*+=-:. ';
 
-const CHAR_SETS = {
-  matrix: '$#*+=-:. '
+// --- СОСТОЯНИЕ ---
+let state = {
+    width: RESOLUTIONS.low.width,
+    height: RESOLUTIONS.low.height,
+    isPaused: false,
+    isInverted: false,
+    isMirrored: false,
+    particlesEnabled: true,
+    hasCameraAccess: false,
+    isProcessing: false,
 };
-
-// --- STATE ---
-let width = RESOLUTIONS.low.width, height = RESOLUTIONS.low.height;
-let currentCharSet = 'matrix';
-let isPaused = false, isInverted = false, isMirrored = false;
-let particlesEnabled = true;
 let frameCount = 0, lastTimeSec = 0, fps = 0;
-let hasCameraAccess = false;
+let asciiWorker;
 
-// caches
-let luminance = new Float32Array(width * height);
-
-// DOM
+// --- DOM-ЭЛЕМЕНТЫ ---
 const asciiArtElement = document.getElementById('asciiArt');
 const statsElement = document.getElementById('stats');
-const container = document.getElementById('container');
 const loadingElement = document.getElementById('loading');
 const controlsPanel = document.getElementById('controlsPanel');
 const toggleUiButton = document.getElementById('toggleUi');
 const permissionBtn = document.getElementById('permissionBtn');
-
-// Video/Canvas
 const video = document.createElement('video');
 const canvas = document.createElement('canvas');
 const ctx = canvas.getContext('2d', { willReadFrequently: true });
 
-// --- UI HELPERS ---
+// --- ЛОГИКА WEB WORKER ---
+function createAsciiWorker() {
+    const workerCode = `
+      const CHAR_SET = '${CHAR_SET}';
+      const CHAR_LEN = CHAR_SET.length - 1;
+
+      self.onmessage = function(e) {
+        const { frameData, width, height, isInverted } = e.data;
+        const pixels = frameData.data;
+        // Оптимизация: используем массив и join вместо конкатенации строк
+        const asciiChars = new Array(width * height + height);
+        let arrayIndex = 0;
+
+        for (let y = 0; y < height; y++) {
+          for (let x = 0; x < width; x++) {
+            const i = (y * width + x) * 4;
+            let r = pixels[i], g = pixels[i + 1], b = pixels[i + 2];
+            if (isInverted) { r = 255 - r; g = 255 - g; b = 255 - b; }
+            
+            // Стандартный коэффициент для расчёта яркости (Luma)
+            const lum = 0.299 * r + 0.587 * g + 0.114 * b;
+            const charIndex = Math.floor((lum / 255) * CHAR_LEN);
+            asciiChars[arrayIndex++] = CHAR_SET[charIndex];
+          }
+          asciiChars[arrayIndex++] = '\\n';
+        }
+        self.postMessage(asciiChars.join(''));
+      };
+    `;
+    const blob = new Blob([workerCode], { type: 'application/javascript' });
+    return new Worker(URL.createObjectURL(blob));
+}
+
+// --- УПРАВЛЕНИЕ UI ---
 function updateActiveButton(parentId, activeButton) {
   document.querySelectorAll(`#${parentId} .btn`).forEach(btn => btn.classList.remove('active'));
   if (activeButton) activeButton.classList.add('active');
 }
 
 function updateStats() {
-  statsElement.textContent = `FPS: ${fps} | Res: ${width}x${height} | Matrix`;
+  statsElement.textContent = `FPS: ${fps} | Res: ${state.width}x${state.height} | Matrix`;
 }
 
 function setResolution(resolution, button) {
   const res = RESOLUTIONS[resolution];
-  width = res.width; 
-  height = res.height;
-  canvas.width = width; 
-  canvas.height = height;
-  luminance = new Float32Array(width * height);
+  state.width = res.width;
+  state.height = res.height;
+  canvas.width = state.width;
+  canvas.height = state.height;
   updateActiveButton('resolution-buttons', button);
   updateStats();
 }
 
-function togglePause() {
-  isPaused = !isPaused;
-  document.getElementById('pauseBtn').classList.toggle('active', isPaused);
-}
-
-function toggleInvert() {
-  isInverted = !isInverted;
-  document.getElementById('invertBtn').classList.toggle('active', isInverted);
-}
-
-function toggleMirror() {
-  isMirrored = !isMirrored;
-  document.getElementById('mirrorBtn').classList.toggle('active', isMirrored);
+function toggleButton(id, stateKey) {
+  state[stateKey] = !state[stateKey];
+  document.getElementById(id).classList.toggle('active', state[stateKey]);
 }
 
 function toggleFullscreen() {
-  if (document.fullscreenElement) {
-    if (document.exitFullscreen) document.exitFullscreen();
-    else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
-  } else {
-    const docEl = document.documentElement;
-    if (docEl.requestFullscreen) docEl.requestFullscreen();
-    else if (docEl.webkitRequestFullscreen) docEl.webkitRequestFullscreen();
-  }
+    try {
+        if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen();
+        } else if (document.exitFullscreen) {
+            document.exitFullscreen();
+        }
+    } catch (e) {
+        console.error("Fullscreen API error:", e);
+    }
 }
 
 function toggleParticles() {
-  particlesEnabled = !particlesEnabled;
-  const particles = document.getElementById('particles');
-  particles.style.display = particlesEnabled ? 'block' : 'none';
-  document.getElementById('particlesBtn').classList.toggle('active', particlesEnabled);
+  state.particlesEnabled = !state.particlesEnabled;
+  document.getElementById('particles').style.display = state.particlesEnabled ? 'block' : 'none';
+  document.getElementById('particlesBtn').classList.toggle('active', state.particlesEnabled);
 }
 
 function takeScreenshot() {
-  const text = asciiArtElement.textContent;
-  const textArea = document.createElement('textarea');
-  textArea.value = text;
-  document.body.appendChild(textArea);
-  textArea.select();
-  
-  try {
-    document.execCommand('copy');
-    alert('ASCII-арт скопирован в буфер обмена!');
-  } catch (err) {
-    alert('Не удалось скопировать, попробуйте выделить текст вручную');
-  }
-  
-  document.body.removeChild(textArea);
-}
-
-function initSliders() {
-  ['fontSize', 'contrast', 'brightness'].forEach(id => {
-    document.getElementById(id).addEventListener('input', updateStyles);
-  });
-  updateStyles();
+    const text = asciiArtElement.textContent;
+    navigator.clipboard.writeText(text).then(() => {
+        alert('ASCII-арт скопирован в буфер обмена!');
+    }).catch(err => {
+        alert('Не удалось скопировать, попробуйте выделить текст вручную');
+        console.error('Clipboard error:', err);
+    });
 }
 
 function updateStyles() {
   const fontSize = document.getElementById('fontSize').value;
   const contrast = document.getElementById('contrast').value;
   const brightness = document.getElementById('brightness').value;
-  
+
   document.getElementById('fontSizeValue').textContent = `${fontSize}px`;
   document.getElementById('contrastValue').textContent = parseFloat(contrast).toFixed(1);
   document.getElementById('brightnessValue').textContent = parseFloat(brightness).toFixed(1);
-  
+
   asciiArtElement.style.fontSize = `${fontSize}px`;
-  canvas.style.filter = `contrast(${contrast}) brightness(${brightness})`;
+  ctx.filter = `contrast(${contrast}) brightness(${brightness})`;
 }
 
 function setAsciiColor(color, button) {
@@ -550,187 +537,158 @@ function setAsciiColor(color, button) {
   updateActiveButton('color-buttons', button);
 }
 
+// --- ИНИЦИАЛИЗАЦИЯ ---
 function initEventListeners() {
-  // Кнопки цвета
   document.querySelectorAll('#color-buttons .btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      setAsciiColor(btn.dataset.color, btn);
-    });
+    btn.addEventListener('click', () => setAsciiColor(btn.dataset.color, btn));
   });
-  
+
   document.querySelectorAll('#resolution-buttons .btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      setResolution(btn.dataset.res, btn);
-    });
+    btn.addEventListener('click', () => setResolution(btn.dataset.res, btn));
   });
   
-  document.getElementById('invertBtn').addEventListener('click', toggleInvert);
-  document.getElementById('pauseBtn').addEventListener('click', togglePause);
-  document.getElementById('mirrorBtn').addEventListener('click', toggleMirror);
+  ['fontSize', 'contrast', 'brightness'].forEach(id => {
+    document.getElementById(id).addEventListener('input', updateStyles);
+  });
+  
+  document.getElementById('invertBtn').addEventListener('click', () => toggleButton('invertBtn', 'isInverted'));
+  document.getElementById('pauseBtn').addEventListener('click', () => toggleButton('pauseBtn', 'isPaused'));
+  document.getElementById('mirrorBtn').addEventListener('click', () => toggleButton('mirrorBtn', 'isMirrored'));
   document.getElementById('screenshotBtn').addEventListener('click', takeScreenshot);
   document.getElementById('fullscreenBtn').addEventListener('click', toggleFullscreen);
   document.getElementById('particlesBtn').addEventListener('click', toggleParticles);
-  
+
   toggleUiButton.addEventListener('click', () => {
     controlsPanel.classList.toggle('hidden');
   });
-  
+
   document.addEventListener('touchstart', (e) => {
-    if (!controlsPanel.classList.contains('hidden') && 
-        !controlsPanel.contains(e.target) && 
-        e.target !== toggleUiButton) {
+    if (!controlsPanel.classList.contains('hidden') && !controlsPanel.contains(e.target) && e.target !== toggleUiButton) {
       controlsPanel.classList.add('hidden');
     }
-  });
-  
-  document.addEventListener('touchmove', (e) => {
-    if (e.touches.length > 1) {
-      e.preventDefault();
-    }
-  }, { passive: false });
+  }, { passive: true });
 }
 
-// --- RENDER LOOP ---
+// --- ГЛАВНЫЙ ЦИКЛ РЕНДЕРИНГА ---
 function processFrame(now) {
-  // FPS
-  frameCount++;
+  requestAnimationFrame(processFrame);
+  
   if (now - lastTimeSec >= 1000) {
     fps = frameCount;
     frameCount = 0;
     lastTimeSec = now;
     updateStats();
   }
+  frameCount++;
 
-  if (hasCameraAccess && !isPaused && video.readyState >= 2) {
-    ctx.save();
-    if (isMirrored) {
-      ctx.translate(width, 0);
-      ctx.scale(-1, 1);
-    }
-    ctx.drawImage(video, 0, 0, width, height);
-    ctx.restore();
-    
-    const frame = ctx.getImageData(0, 0, width, height);
-    const pixels = frame.data;
-
-    const chars = CHAR_SETS[currentCharSet];
-    const charLen = chars.length - 1;
-
-    let ascii = '';
-    let idx = 0;
-    for (let y = 0; y < height; y++) {
-      for (let x = 0; x < width; x++, idx++) {
-        const i = idx * 4;
-        let r = pixels[i], g = pixels[i + 1], b = pixels[i + 2];
-        if (isInverted) { r = 255 - r; g = 255 - g; b = 255 - b; }
-        const lum = 0.299 * r + 0.587 * g + 0.114 * b;
-        luminance[idx] = lum / 255;
-        const charIndex = Math.floor((lum / 255) * charLen);
-        ascii += chars.charAt(charIndex);
-      }
-      ascii += '\n';
-    }
-    asciiArtElement.textContent = ascii;
+  if (!state.hasCameraAccess || state.isPaused || state.isProcessing || video.readyState < 2) {
+    return;
   }
+  
+  state.isProcessing = true;
+  
+  ctx.save();
+  if (state.isMirrored) {
+    ctx.translate(state.width, 0);
+    ctx.scale(-1, 1);
+  }
+  ctx.drawImage(video, 0, 0, state.width, state.height);
+  ctx.restore();
 
-  requestAnimationFrame(processFrame);
+  const frameData = ctx.getImageData(0, 0, state.width, state.height);
+  
+  asciiWorker.postMessage({
+      frameData,
+      width: state.width,
+      height: state.height,
+      isInverted: state.isInverted
+  }, [frameData.data.buffer]);
 }
 
-// --- PARTICLE EFFECTS ---
+// --- ФОНОВЫЕ ЭФФЕКТЫ ---
 function createParticles() {
   const particlesContainer = document.getElementById('particles');
+  if (!particlesContainer) return;
   const particleCount = 30;
-  
+  let fragment = document.createDocumentFragment();
   for (let i = 0; i < particleCount; i++) {
     const particle = document.createElement('div');
-    particle.classList.add('particle');
-    
-    // Случайная позиция
-    const left = Math.random() * 100;
+    particle.className = 'particle';
+    particle.style.left = `${Math.random() * 100}%`;
     const size = Math.random() * 3 + 1;
-    const opacity = Math.random() * 0.5 + 0.1;
-    const duration = Math.random() * 10 + 5;
-    
-    particle.style.left = `${left}%`;
     particle.style.width = `${size}px`;
     particle.style.height = `${size}px`;
-    particle.style.opacity = opacity;
-    particle.style.animationDuration = `${duration}s`;
+    particle.style.opacity = Math.random() * 0.5 + 0.1;
+    particle.style.animationDuration = `${Math.random() * 10 + 5}s`;
     particle.style.animationDelay = `${Math.random() * 5}s`;
-    
-    particlesContainer.appendChild(particle);
+    fragment.appendChild(particle);
   }
+  particlesContainer.appendChild(fragment);
 }
 
-// --- INIT ---
+
 async function initWebcam() {
   try {
-    // Проверяем поддержку медиа устройств
-    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-      throw new Error('Ваш браузер не поддерживает доступ к камере');
+    if (!navigator.mediaDevices?.getUserMedia) {
+      throw new Error('Ваш браузер не поддерживает доступ к камере (getUserMedia).');
     }
-    
-    // На iOS нужно использовать правильные ограничения
     const constraints = {
-      video: {
-        width: { ideal: 640 },
-        height: { ideal: 480 },
-        facingMode: 'environment'
-      },
+      video: { width: { ideal: 640 }, height: { ideal: 480 }, facingMode: 'environment' },
       audio: false
     };
-    
     const stream = await navigator.mediaDevices.getUserMedia(constraints);
     video.srcObject = stream;
-    video.playsInline = true;
+    video.playsInline = true; 
     video.setAttribute('playsinline', 'true');
-    
-    // Ждем загрузки метаданных видео
-    await new Promise((resolve) => {
-      video.addEventListener('loadedmetadata', resolve, { once: true });
-    });
-    
     await video.play();
-    canvas.width = width; 
-    canvas.height = height;
+    
+    canvas.width = state.width;
+    canvas.height = state.height;
 
     loadingElement.style.display = 'none';
-    hasCameraAccess = true;
+    controlsPanel.classList.remove('hidden');
+    state.hasCameraAccess = true;
+    
+    asciiWorker = createAsciiWorker();
+    asciiWorker.onmessage = (e) => {
+      asciiArtElement.textContent = e.data;
+      state.isProcessing = false; 
+    };
     
     createParticles();
-    
+    requestAnimationFrame(processFrame);
+
   } catch (error) {
-    console.error('Camera access error:', error);
-    loadingElement.querySelector('.loading-text').textContent = 
-      '🚫 Ошибка доступа к камере. Проверьте разрешения или используйте HTTPS.';
+    console.error('Ошибка доступа к камере:', error);
+    const errText = error.name === 'NotAllowedError' 
+      ? 'Вы не разрешили доступ к камере.'
+      : 'Ошибка доступа к камере. Проверьте разрешения в браузере и используйте HTTPS.';
+    loadingElement.querySelector('.loading-text').textContent = `🚫 ${errText}`;
+    permissionBtn.style.display = 'none';
   }
 }
 
-permissionBtn.addEventListener('click', initWebcam);
-
 window.addEventListener('load', () => {
-  initSliders();
   initEventListeners();
+  updateStyles();
   updateStats();
   
-  if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-    permissionBtn.style.display = 'block';
+  if (navigator.mediaDevices?.getUserMedia) {
+    permissionBtn.addEventListener('click', initWebcam);
   } else {
-    loadingElement.querySelector('.loading-text').textContent = 
-      '🚫 Ваш браузер не поддерживает доступ к камере';
+    loadingElement.querySelector('.loading-text').textContent = '🚫 Ваш браузер не поддерживает доступ к камере.';
     permissionBtn.style.display = 'none';
   }
-  
-  requestAnimationFrame(processFrame);
 });
 
 window.addEventListener('beforeunload', () => {
   if (video.srcObject) {
-    const tracks = video.srcObject.getTracks();
-    tracks.forEach(track => track.stop());
+    video.srcObject.getTracks().forEach(track => track.stop());
+  }
+  if (asciiWorker) {
+    asciiWorker.terminate();
   }
 });
 </script>
 </body>
-
 </html>
