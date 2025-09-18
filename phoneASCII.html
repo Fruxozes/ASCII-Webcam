@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Webcam ASCII Art — Matrix Edition</title>
+<style>
+:root {
+  --ascii-color: #0f0;
+  --ascii-glow: #0f0;
+  --bg-color: #000;
+  --ui-bg: rgba(0, 20, 0, 0.85);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; overflow: hidden; -webkit-tap-highlight-color: transparent; }
+
+body {
+  background: var(--bg-color);
+  font-family: -apple-system, BlinkMacSystemFont, 'Courier New', monospace;
+  display: flex; 
+  align-items: center; 
+  justify-content: center;
+  position: relative;
+  touch-action: manipulation;
+}
+
+.particles {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  overflow: hidden;
+}
+
+.particle {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background-color: rgba(0, 255, 0, 0.5);
+  border-radius: 50%;
+  animation: fall linear infinite;
+}
+
+@keyframes fall {
+  to {
+    transform: translateY(100vh);
+  }
+}
+
+.matrix-rain {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  opacity: 0.1;
+  pointer-events: none;
+}
+
+#container {
+  position: relative;
+  border: 2px solid color-mix(in srgb, var(--ascii-color) 30%, transparent);
+  border-radius: 12px;
+  padding: 10px;
+  background: rgba(0, 0, 0, 0.7);
+  box-shadow: 0 0 30px color-mix(in srgb, var(--ascii-color) 20%, transparent),
+              inset 0 0 20px color-mix(in srgb, var(--ascii-color) 10%, transparent);
+  backdrop-filter: blur(5px);
+  overflow: hidden;
+  max-width: 95vw; 
+  max-height: 70vh;
+  z-index: 10;
+  margin-top: 50px;
+}
+
+#asciiArt {
+  white-space: pre;
+  line-height: 0.95;
+  font-size: 6px;
+  user-select: none;
+  font-weight: 500;
+  color: var(--ascii-color);
+  text-shadow: 0 0 3px var(--ascii-glow), 0 0 8px var(--ascii-glow);
+}
+
+.controls-panel {
+  position: fixed; 
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--ui-bg);
+  padding: 12px 10px; 
+  border-radius: 15px 15px 0 0;
+  border-top: 1px solid var(--ascii-color);
+  border-left: 1px solid var(--ascii-color);
+  border-right: 1px solid var(--ascii-color);
+  backdrop-filter: blur(15px); 
+  z-index: 1000;
+  display: flex; 
+  flex-direction: column; 
+  gap: 12px;
+  align-items: center; 
+  max-height: 40vh;
+  overflow-y: auto;
+  box-shadow: 0 0 40px color-mix(in srgb, var(--ascii-color) 40%, transparent);
+  transition: transform 0.3s ease;
+  -webkit-overflow-scrolling: touch;
+}
+
+.controls-panel.hidden {
+  transform: translateY(100%);
+}
+
+.control-group { 
+  display: flex; 
+  flex-direction: column; 
+  align-items: center; 
+  width: 100%; 
+}
+
+.control-group label {
+  color: var(--ascii-color); 
+  font-size: 14px; 
+  margin-bottom: 8px;
+  text-shadow: 0 0 3px var(--ascii-glow); 
+  font-weight: bold;
+}
+
+.slider-container { 
+  display: flex; 
+  flex-direction: column; 
+  align-items: center; 
+  gap: 5px; 
+  margin-bottom: 8px; 
+  width: 100%;
+}
+
+input[type="range"] {
+  width: 90%; 
+  height: 8px;
+  background: linear-gradient(to right, #001800, var(--ascii-color));
+  border-radius: 5px; 
+  outline: none; 
+  -webkit-appearance: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none; 
+  width: 24px; 
+  height: 24px; 
+  background: var(--ascii-color);
+  border-radius: 50%; 
+  cursor: pointer; 
+  box-shadow: 0 0 8px var(--ascii-color); 
+  border: 2px solid #000;
+}
+
+.value-display {
+  color: var(--ascii-color); 
+  font-size: 12px; 
+  background: rgba(0, 30, 0, 0.7);
+  padding: 4px 8px; 
+  border-radius: 6px;
+  border: 1px solid color-mix(in srgb, var(--ascii-color) 30%, transparent);
+  min-width: 50px; 
+  text-align: center;
+}
+
+.button-grid { 
+  display: grid; 
+  grid-template-columns: repeat(3, 1fr); 
+  gap: 10px; 
+  width: 100%;
+}
+
+.btn {
+  background: linear-gradient(45deg, #002200, #003300);
+  color: var(--ascii-color);
+  border: 1px solid var(--ascii-color);
+  padding: 10px 5px; 
+  cursor: pointer;
+  font: bold 14px -apple-system, BlinkMacSystemFont, sans-serif; 
+  border-radius: 8px;
+  transition: all 0.15s ease; 
+  text-shadow: 0 0 2px var(--ascii-glow);
+  min-height: 44px;
+}
+
+.btn:hover {
+  background: linear-gradient(45deg, var(--ascii-color), #00bb00);
+  color: #000;
+  box-shadow: 0 0 15px var(--ascii-color);
+  transform: translateY(-2px);
+}
+
+.btn.active { 
+  background: var(--ascii-color); 
+  color: #000; 
+  box-shadow: 0 0 20px var(--ascii-color); 
+}
+
+.top-bar { 
+  position: fixed; 
+  top: 15px; 
+  left: 0;
+  right: 0;
+  z-index: 1001; 
+  display: flex;
+  justify-content: space-between;
+  padding: 0 15px;
+}
+
+.stats {
+  color: var(--ascii-color); 
+  font-size: 12px; 
+  text-shadow: 0 0 2px var(--ascii-glow);
+  background: var(--ui-bg);
+  padding: 8px 12px; 
+  border-radius: 8px; 
+  border: 1px solid var(--ascii-color);
+}
+
+.toggle-ui {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--ui-bg);
+  color: var(--ascii-color);
+  border: 1px solid var(--ascii-color);
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 20px;
+}
+
+.loading {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.loading-text {
+  color: var(--ascii-color);
+  font-size: 18px;
+  text-shadow: 0 0 10px var(--ascii-glow);
+  text-align: center;
+  padding: 0 20px;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(0, 255, 0, 0.3);
+  border-top: 4px solid var(--ascii-color);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.permission-btn {
+  background: linear-gradient(45deg, #002200, #003300);
+  color: var(--ascii-color);
+  border: 1px solid var(--ascii-color);
+  padding: 12px 20px;
+  cursor: pointer;
+  font: bold 16px -apple-system, BlinkMacSystemFont, sans-serif;
+  border-radius: 8px;
+  margin-top: 20px;
+  text-shadow: 0 0 2px var(--ascii-glow);
+  box-shadow: 0 0 15px var(--ascii-color);
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@media (max-width: 768px) {
+  #container {
+    max-height: 60vh;
+    margin-top: 60px;
+    padding: 8px;
+  }
+  
+  #asciiArt {
+    font-size: 5px;
+  }
+  
+  .controls-panel {
+    padding: 10px 8px;
+    gap: 10px;
+  }
+  
+  .button-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+  
+  .btn {
+    padding: 8px 4px;
+    font-size: 12px;
+    min-height: 40px;
+  }
+  
+  .control-group label {
+    font-size: 12px;
+  }
+}
+
+@media (max-height: 500px) and (orientation: landscape) {
+  #container {
+    max-height: 80vh;
+    margin-top: 10px;
+  }
+  
+  .controls-panel {
+    max-height: 90vh;
+  }
+}
+
+@supports(padding: max(0px)) {
+  .top-bar {
+    padding-left: max(15px, env(safe-area-inset-left));
+    padding-right: max(15px, env(safe-area-inset-right));
+    padding-top: env(safe-area-inset-top);
+  }
+  
+  .controls-panel {
+    padding-bottom: max(12px, env(safe-area-inset-bottom));
+  }
+}
+</style>
+</head>
+<body>
+  <!-- Анимированный фон -->
+  <div class="particles" id="particles"></div>
+  <div class="matrix-rain" id="matrixRain"></div>
+
+  <!-- Экран загрузки -->
+  <div class="loading" id="loading">
+    <div class="loading-spinner"></div>
+    <div class="loading-text">ЗАГРУЗКА MATRIX...<br>Разрешите доступ к камере</div>
+    <button class="permission-btn" id="permissionBtn">Разрешить доступ к камере</button>
+  </div>
+
+  <div class="top-bar">
+    <div class="stats" id="stats">FPS: 0 | Res: 120x68 | Matrix</div>
+    <div class="toggle-ui" id="toggleUi">≡</div>
+  </div>
+
+  <div id="container">
+    <pre id="asciiArt"></pre>
+  </div>
+
+  <div class="controls-panel" id="controlsPanel">
+    <div class="control-group">
+      <label>Настройки</label>
+      <div class="slider-container">
+        <input title="Размер" type="range" id="fontSize" min="4" max="12" value="6" step="0.5">
+        <div class="value-display" id="fontSizeValue">6px</div>
+      </div>
+      <div class="slider-container">
+        <input title="Контраст" type="range" id="contrast" min="0.5" max="3" value="1.5" step="0.1">
+        <div class="value-display" id="contrastValue">1.5</div>
+      </div>
+      <div class="slider-container">
+        <input title="Яркость" type="range" id="brightness" min="0.5" max="2" value="1" step="0.1">
+        <div class="value-display" id="brightnessValue">1.0</div>
+      </div>
+    </div>
+
+    <div class="control-group">
+      <label>🎨 Цвет</label>
+      <div class="button-grid" id="color-buttons">
+        <button class="btn active" data-color="#0f0">Зелёный</button>
+        <button class="btn" data-color="#0ff">Голубой</button>
+        <button class="btn" data-color="#ff0">Жёлтый</button>
+        <button class="btn" data-color="#f0f">Пурпур</button>
+        <button class="btn" data-color="#fff">Белый</button>
+        <button class="btn" data-color="#f00">Красный</button>
+      </div>
+    </div>
+
+    <div class="control-group">
+      <label>🔍 Разрешение</label>
+      <div class="button-grid" id="resolution-buttons">
+        <button class="btn active" data-res="low">Низк.</button>
+        <button class="btn" data-res="medium">Сред.</button>
+        <button class="btn" data-res="high">Выс.</button>
+      </div>
+    </div>
+
+    <div class="control-group">
+      <label>⚙️ Эффекты</label>
+      <div class="button-grid">
+        <button class="btn" id="invertBtn" title="Инверсия">🔄</button>
+        <button class="btn" id="pauseBtn" title="Пауза">⏯️</button>
+        <button class="btn" id="mirrorBtn" title="Зеркало">🔁</button>
+        <button class="btn" id="screenshotBtn" title="Скриншот">📸</button>
+        <button class="btn" id="fullscreenBtn" title="Полный экран">⛶</button>
+        <button class="btn" id="particlesBtn" title="Частицы">✨</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+// --- CONFIG ---
+const RESOLUTIONS = {
+  low: { width: 120, height: 68 },
+  medium: { width: 160, height: 90 },
+  high: { width: 200, height: 113 }
+};
+
+const CHAR_SETS = {
+  matrix: '$#*+=-:. '
+};
+
+// --- STATE ---
+let width = RESOLUTIONS.low.width, height = RESOLUTIONS.low.height;
+let currentCharSet = 'matrix';
+let isPaused = false, isInverted = false, isMirrored = false;
+let particlesEnabled = true;
+let frameCount = 0, lastTimeSec = 0, fps = 0;
+let hasCameraAccess = false;
+
+// caches
+let luminance = new Float32Array(width * height);
+
+// DOM
+const asciiArtElement = document.getElementById('asciiArt');
+const statsElement = document.getElementById('stats');
+const container = document.getElementById('container');
+const loadingElement = document.getElementById('loading');
+const controlsPanel = document.getElementById('controlsPanel');
+const toggleUiButton = document.getElementById('toggleUi');
+const permissionBtn = document.getElementById('permissionBtn');
+
+// Video/Canvas
+const video = document.createElement('video');
+const canvas = document.createElement('canvas');
+const ctx = canvas.getContext('2d', { willReadFrequently: true });
+
+// --- UI HELPERS ---
+function updateActiveButton(parentId, activeButton) {
+  document.querySelectorAll(`#${parentId} .btn`).forEach(btn => btn.classList.remove('active'));
+  if (activeButton) activeButton.classList.add('active');
+}
+
+function updateStats() {
+  statsElement.textContent = `FPS: ${fps} | Res: ${width}x${height} | Matrix`;
+}
+
+function setResolution(resolution, button) {
+  const res = RESOLUTIONS[resolution];
+  width = res.width; 
+  height = res.height;
+  canvas.width = width; 
+  canvas.height = height;
+  luminance = new Float32Array(width * height);
+  updateActiveButton('resolution-buttons', button);
+  updateStats();
+}
+
+function togglePause() {
+  isPaused = !isPaused;
+  document.getElementById('pauseBtn').classList.toggle('active', isPaused);
+}
+
+function toggleInvert() {
+  isInverted = !isInverted;
+  document.getElementById('invertBtn').classList.toggle('active', isInverted);
+}
+
+function toggleMirror() {
+  isMirrored = !isMirrored;
+  document.getElementById('mirrorBtn').classList.toggle('active', isMirrored);
+}
+
+function toggleFullscreen() {
+  if (document.fullscreenElement) {
+    if (document.exitFullscreen) document.exitFullscreen();
+    else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+  } else {
+    const docEl = document.documentElement;
+    if (docEl.requestFullscreen) docEl.requestFullscreen();
+    else if (docEl.webkitRequestFullscreen) docEl.webkitRequestFullscreen();
+  }
+}
+
+function toggleParticles() {
+  particlesEnabled = !particlesEnabled;
+  const particles = document.getElementById('particles');
+  particles.style.display = particlesEnabled ? 'block' : 'none';
+  document.getElementById('particlesBtn').classList.toggle('active', particlesEnabled);
+}
+
+function takeScreenshot() {
+  const text = asciiArtElement.textContent;
+  const textArea = document.createElement('textarea');
+  textArea.value = text;
+  document.body.appendChild(textArea);
+  textArea.select();
+  
+  try {
+    document.execCommand('copy');
+    alert('ASCII-арт скопирован в буфер обмена!');
+  } catch (err) {
+    alert('Не удалось скопировать, попробуйте выделить текст вручную');
+  }
+  
+  document.body.removeChild(textArea);
+}
+
+function initSliders() {
+  ['fontSize', 'contrast', 'brightness'].forEach(id => {
+    document.getElementById(id).addEventListener('input', updateStyles);
+  });
+  updateStyles();
+}
+
+function updateStyles() {
+  const fontSize = document.getElementById('fontSize').value;
+  const contrast = document.getElementById('contrast').value;
+  const brightness = document.getElementById('brightness').value;
+  
+  document.getElementById('fontSizeValue').textContent = `${fontSize}px`;
+  document.getElementById('contrastValue').textContent = parseFloat(contrast).toFixed(1);
+  document.getElementById('brightnessValue').textContent = parseFloat(brightness).toFixed(1);
+  
+  asciiArtElement.style.fontSize = `${fontSize}px`;
+  canvas.style.filter = `contrast(${contrast}) brightness(${brightness})`;
+}
+
+function setAsciiColor(color, button) {
+  document.documentElement.style.setProperty('--ascii-color', color);
+  document.documentElement.style.setProperty('--ascii-glow', color);
+  updateActiveButton('color-buttons', button);
+}
+
+function initEventListeners() {
+  // Кнопки цвета
+  document.querySelectorAll('#color-buttons .btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      setAsciiColor(btn.dataset.color, btn);
+    });
+  });
+  
+  document.querySelectorAll('#resolution-buttons .btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      setResolution(btn.dataset.res, btn);
+    });
+  });
+  
+  document.getElementById('invertBtn').addEventListener('click', toggleInvert);
+  document.getElementById('pauseBtn').addEventListener('click', togglePause);
+  document.getElementById('mirrorBtn').addEventListener('click', toggleMirror);
+  document.getElementById('screenshotBtn').addEventListener('click', takeScreenshot);
+  document.getElementById('fullscreenBtn').addEventListener('click', toggleFullscreen);
+  document.getElementById('particlesBtn').addEventListener('click', toggleParticles);
+  
+  toggleUiButton.addEventListener('click', () => {
+    controlsPanel.classList.toggle('hidden');
+  });
+  
+  document.addEventListener('touchstart', (e) => {
+    if (!controlsPanel.classList.contains('hidden') && 
+        !controlsPanel.contains(e.target) && 
+        e.target !== toggleUiButton) {
+      controlsPanel.classList.add('hidden');
+    }
+  });
+  
+  document.addEventListener('touchmove', (e) => {
+    if (e.touches.length > 1) {
+      e.preventDefault();
+    }
+  }, { passive: false });
+}
+
+// --- RENDER LOOP ---
+function processFrame(now) {
+  // FPS
+  frameCount++;
+  if (now - lastTimeSec >= 1000) {
+    fps = frameCount;
+    frameCount = 0;
+    lastTimeSec = now;
+    updateStats();
+  }
+
+  if (hasCameraAccess && !isPaused && video.readyState >= 2) {
+    ctx.save();
+    if (isMirrored) {
+      ctx.translate(width, 0);
+      ctx.scale(-1, 1);
+    }
+    ctx.drawImage(video, 0, 0, width, height);
+    ctx.restore();
+    
+    const frame = ctx.getImageData(0, 0, width, height);
+    const pixels = frame.data;
+
+    const chars = CHAR_SETS[currentCharSet];
+    const charLen = chars.length - 1;
+
+    let ascii = '';
+    let idx = 0;
+    for (let y = 0; y < height; y++) {
+      for (let x = 0; x < width; x++, idx++) {
+        const i = idx * 4;
+        let r = pixels[i], g = pixels[i + 1], b = pixels[i + 2];
+        if (isInverted) { r = 255 - r; g = 255 - g; b = 255 - b; }
+        const lum = 0.299 * r + 0.587 * g + 0.114 * b;
+        luminance[idx] = lum / 255;
+        const charIndex = Math.floor((lum / 255) * charLen);
+        ascii += chars.charAt(charIndex);
+      }
+      ascii += '\n';
+    }
+    asciiArtElement.textContent = ascii;
+  }
+
+  requestAnimationFrame(processFrame);
+}
+
+// --- PARTICLE EFFECTS ---
+function createParticles() {
+  const particlesContainer = document.getElementById('particles');
+  const particleCount = 30;
+  
+  for (let i = 0; i < particleCount; i++) {
+    const particle = document.createElement('div');
+    particle.classList.add('particle');
+    
+    // Случайная позиция
+    const left = Math.random() * 100;
+    const size = Math.random() * 3 + 1;
+    const opacity = Math.random() * 0.5 + 0.1;
+    const duration = Math.random() * 10 + 5;
+    
+    particle.style.left = `${left}%`;
+    particle.style.width = `${size}px`;
+    particle.style.height = `${size}px`;
+    particle.style.opacity = opacity;
+    particle.style.animationDuration = `${duration}s`;
+    particle.style.animationDelay = `${Math.random() * 5}s`;
+    
+    particlesContainer.appendChild(particle);
+  }
+}
+
+// --- INIT ---
+async function initWebcam() {
+  try {
+    // Проверяем поддержку медиа устройств
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      throw new Error('Ваш браузер не поддерживает доступ к камере');
+    }
+    
+    // На iOS нужно использовать правильные ограничения
+    const constraints = {
+      video: {
+        width: { ideal: 640 },
+        height: { ideal: 480 },
+        facingMode: 'environment'
+      },
+      audio: false
+    };
+    
+    const stream = await navigator.mediaDevices.getUserMedia(constraints);
+    video.srcObject = stream;
+    video.playsInline = true;
+    video.setAttribute('playsinline', 'true');
+    
+    // Ждем загрузки метаданных видео
+    await new Promise((resolve) => {
+      video.addEventListener('loadedmetadata', resolve, { once: true });
+    });
+    
+    await video.play();
+    canvas.width = width; 
+    canvas.height = height;
+
+    loadingElement.style.display = 'none';
+    hasCameraAccess = true;
+    
+    createParticles();
+    
+  } catch (error) {
+    console.error('Camera access error:', error);
+    loadingElement.querySelector('.loading-text').textContent = 
+      '🚫 Ошибка доступа к камере. Проверьте разрешения или используйте HTTPS.';
+  }
+}
+
+permissionBtn.addEventListener('click', initWebcam);
+
+window.addEventListener('load', () => {
+  initSliders();
+  initEventListeners();
+  updateStats();
+  
+  if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+    permissionBtn.style.display = 'block';
+  } else {
+    loadingElement.querySelector('.loading-text').textContent = 
+      '🚫 Ваш браузер не поддерживает доступ к камере';
+    permissionBtn.style.display = 'none';
+  }
+  
+  requestAnimationFrame(processFrame);
+});
+
+window.addEventListener('beforeunload', () => {
+  if (video.srcObject) {
+    const tracks = video.srcObject.getTracks();
+    tracks.forEach(track => track.stop());
+  }
+});
+</script>
+</body>
+</html>
